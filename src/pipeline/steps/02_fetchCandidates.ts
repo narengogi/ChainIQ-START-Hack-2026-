@@ -1,4 +1,5 @@
 import { query } from "../../db/mysql";
+import { fuzzyMatchCategory, likeMatchCategory } from "../../lib/fuzzyCategory";
 import type { CandidateSupplier, EmitFn, PipelineState } from "../types";
 
 interface SupplierRow {
@@ -21,15 +22,8 @@ interface SupplierRow {
   capacity_per_month:       number | null;
 }
 
-export async function fetchCandidates(state: PipelineState, emit: EmitFn): Promise<void> {
-  const rows = await query<SupplierRow>(
-    `SELECT * FROM suppliers
-     WHERE category_l2 = ?
-       AND contract_status = 'active'`,
-    [state.request.category_l2],
-  );
-
-  const suppliers: CandidateSupplier[] = rows.map((r) => ({
+function mapRow(r: SupplierRow): CandidateSupplier {
+  return {
     supplier_id:              r.supplier_id,
     supplier_name:            r.supplier_name,
     category_l1:              r.category_l1,
@@ -47,7 +41,51 @@ export async function fetchCandidates(state: PipelineState, emit: EmitFn): Promi
     contract_status:          r.contract_status,
     data_residency_supported: Boolean(r.data_residency_supported),
     capacity_per_month:       r.capacity_per_month ?? undefined,
-  }));
+  };
+}
+
+export async function fetchCandidates(state: PipelineState, emit: EmitFn): Promise<void> {
+  let { category_l1, category_l2 } = state.request;
+
+  // --- exact match ---
+  let rows = await query<SupplierRow>(
+    `SELECT * FROM suppliers WHERE category_l2 = ? AND contract_status = 'active'`,
+    [category_l2],
+  );
+
+  // --- fuzzy fallback if exact match returns nothing ---
+  if (rows.length === 0) {
+    const fuzzy = await fuzzyMatchCategory(category_l1, category_l2);
+    const fallback = fuzzy ?? (await likeMatchCategory(category_l2));
+
+    if (fallback) {
+      const resolved_l1 = fallback.category_l1;
+      const resolved_l2 = fallback.category_l2;
+
+      // Emit an informational note so the UI shows the resolution
+      await emit({
+        type: "POLICY_APPLIED",
+        data: {
+          ruleId:      "CAT-RESOLVE",
+          description: `Category "${category_l2}" not found — resolved to "${resolved_l2}" (${resolved_l1}) via fuzzy match`,
+          category:    resolved_l1,
+        },
+      });
+
+      // Update request so downstream steps use the corrected category
+      state.request.category_l1 = resolved_l1;
+      state.request.category_l2 = resolved_l2;
+      category_l1 = resolved_l1;
+      category_l2 = resolved_l2;
+
+      rows = await query<SupplierRow>(
+        `SELECT * FROM suppliers WHERE category_l2 = ? AND contract_status = 'active'`,
+        [category_l2],
+      );
+    }
+  }
+
+  const suppliers: CandidateSupplier[] = rows.map(mapRow);
 
   state.candidates = suppliers;
   state.active     = [...suppliers];

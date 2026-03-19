@@ -15,12 +15,16 @@ const getClient = () =>
 
 const SYSTEM_PROMPT = `You are a procurement request parser. Extract structured fields from the user's free-text procurement request.
 
-Available category_l1 values (and their category_l2 children):
-- IT: Laptops, Docking Stations, Printers, Monitors, Software Licenses, Managed Print Services, Cloud Infrastructure
-- Facilities: Office Furniture, Cleaning Services
-- HR: Recruitment Services
-- Marketing: Influencer Campaign Management, Digital Advertising, Events Management
-- Professional Services: Legal Services, Consulting
+Available category_l1 values (and their exact category_l2 children — use these EXACT strings):
+- IT: Laptops, Mobile Workstations, Desktop Workstations, Monitors, Docking Stations, Smartphones, Tablets, Rugged Devices, Accessories Bundles, Replacement / Break-Fix Pool Devices, Cloud Compute, Cloud Storage, Cloud Networking, Managed Cloud Platform Services, Cloud Security Services
+- Facilities: Workstations and Desks, Office Chairs, Meeting Room Furniture, Storage Cabinets, Reception and Lounge Furniture
+- Professional Services: Cloud Architecture Consulting, Cybersecurity Advisory, Data Engineering Services, Software Development Services, IT Project Management Services
+- Marketing: Search Engine Marketing (SEM), Social Media Advertising, Content Production Services, Marketing Analytics Services, Influencer Campaign Management
+
+IMPORTANT: Always map to the EXACT category_l2 string listed above. For example:
+- "IT project management", "IT PM support", "project management consulting" → category_l1: "Professional Services", category_l2: "IT Project Management Services"
+- "cloud consulting", "cloud architecture" → category_l1: "Professional Services", category_l2: "Cloud Architecture Consulting"
+- "software dev", "development services" → category_l1: "Professional Services", category_l2: "Software Development Services"
 
 Return ONLY a JSON object with this shape:
 {
