@@ -2,27 +2,31 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import RequestForm from "@/components/RequestForm";
-import TextRequestInput from "@/components/TextRequestInput";
-import RaceTrack from "@/components/RaceTrack";
-import EventLog from "@/components/RaceTrack/EventLog";
-import FinalOutput from "@/components/FinalOutput";
-import PolicyManager from "@/components/PolicyManager";
+import LandingChat      from "@/components/LandingChat";
+import RequestSummary   from "@/components/RequestSummary";
+import RaceTrack        from "@/components/RaceTrack";
+import EventLog         from "@/components/RaceTrack/EventLog";
+import FinalOutput      from "@/components/FinalOutput";
+import PolicyManager    from "@/components/PolicyManager";
 import type { FinalRecommendation, PipelineEvent, RequestInput } from "@/src/pipeline/types";
 
-type InputMode = "form" | "text";
-type AppView   = "pipeline" | "policies";
+type AppPhase = "landing" | "pipeline";
+type AppView  = "pipeline" | "policies";
 
 export default function HomePage() {
-  const [appView, setAppView] = useState<AppView>("pipeline");
-  const [events, setEvents]           = useState<PipelineEvent[]>([]);
-  const [isRunning, setIsRunning]     = useState(false);
-  const [recommendation, setRecommendation] = useState<FinalRecommendation | null>(null);
-  const [error, setError]             = useState<string | null>(null);
-  const [inputMode, setInputMode]     = useState<InputMode>("form");
+  const [appPhase,  setAppPhase]  = useState<AppPhase>("landing");
+  const [appView,   setAppView]   = useState<AppView>("pipeline");
+
+  const [activeRequest,     setActiveRequest]     = useState<RequestInput | null>(null);
+  const [events,            setEvents]            = useState<PipelineEvent[]>([]);
+  const [isRunning,         setIsRunning]         = useState(false);
+  const [recommendation,    setRecommendation]    = useState<FinalRecommendation | null>(null);
+  const [error,             setError]             = useState<string | null>(null);
 
   const handleSubmit = useCallback(async (request: RequestInput) => {
-    // Reset state
+    setActiveRequest(request);
+    setAppPhase("pipeline");
+    setAppView("pipeline");
     setEvents([]);
     setRecommendation(null);
     setError(null);
@@ -51,7 +55,7 @@ export default function HomePage() {
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n\n");
-        buffer = lines.pop() ?? ""; // keep incomplete last chunk
+        buffer = lines.pop() ?? "";
 
         for (const chunk of lines) {
           const line = chunk.trim();
@@ -62,17 +66,12 @@ export default function HomePage() {
           try {
             const event = JSON.parse(json) as PipelineEvent;
             setEvents((prev) => [...prev, event]);
-
-            if (event.type === "RECOMMENDATION") {
-              setRecommendation(event.data);
-            }
+            if (event.type === "RECOMMENDATION") setRecommendation(event.data);
             if (event.type === "COMPLETE" || event.type === "ERROR") {
               if (event.type === "ERROR") setError(event.data.message);
               setIsRunning(false);
             }
-          } catch {
-            // malformed chunk — skip
-          }
+          } catch { /* malformed chunk */ }
         }
       }
     } catch (err) {
@@ -82,185 +81,203 @@ export default function HomePage() {
     }
   }, []);
 
-  const hasActivity = events.length > 0;
+  function handleNewRequest() {
+    setAppPhase("landing");
+    setEvents([]);
+    setRecommendation(null);
+    setError(null);
+    setActiveRequest(null);
+  }
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
 
-      {/* Top bar */}
-      <header className="border-b px-6 py-0 flex items-center justify-between shrink-0" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+      {/* ── Top bar ─────────────────────────────────────────────── */}
+      <header
+        className="border-b px-6 py-0 flex items-center justify-between shrink-0"
+        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+      >
         <div className="flex items-center gap-6">
 
           {/* ChainIQ wordmark */}
-          <div className="flex items-center gap-0 py-3.5">
-            <span className="text-base font-bold leading-none" style={{ color: "var(--ciq-red)", fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}>Chain</span>
-            <span className="text-base font-bold leading-none text-white" style={{ fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}>IQ</span>
-            <span className="ml-3 text-[9px] font-semibold tracking-widest uppercase" style={{ color: "var(--text-muted)", letterSpacing: "0.14em" }}>Smart Sourcing</span>
-          </div>
+          <button
+            onClick={handleNewRequest}
+            className="flex items-center gap-0 py-3.5 cursor-pointer"
+            type="button"
+          >
+            <span
+              className="text-base font-black leading-none"
+              style={{ color: "var(--ciq-red)", fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}
+            >Chain</span>
+            <span
+              className="text-base font-black leading-none text-white"
+              style={{ fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}
+            >IQ</span>
+            <span
+              className="ml-3 text-[9px] font-semibold uppercase"
+              style={{ color: "var(--text-muted)", letterSpacing: "0.14em" }}
+            >Smart Sourcing</span>
+          </button>
 
           {/* Divider */}
           <div className="w-px h-5" style={{ background: "var(--border)" }} />
 
-          {/* View switcher */}
-          <div className="flex gap-0.5 p-0.5 rounded-lg border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
-            {([
-              { id: "pipeline" as AppView, label: "Pipeline", icon: "⚡" },
-              { id: "policies" as AppView, label: "Policies",  icon: "📋" },
-            ] as const).map((v) => (
-              <button
-                key={v.id}
-                onClick={() => setAppView(v.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
-                  appView === v.id ? "text-white shadow" : "text-slate-400 hover:text-slate-200"
-                }`}
-                style={appView === v.id ? { background: "var(--ciq-red)" } : {}}
+          {/* View switcher — only shown in pipeline phase */}
+          <AnimatePresence>
+            {appPhase === "pipeline" && (
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                className="flex gap-0.5 p-0.5 rounded-lg border"
+                style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}
               >
-                <span>{v.icon}</span>
-                {v.label}
-              </button>
-            ))}
-          </div>
+                {([
+                  { id: "pipeline" as AppView, label: "Pipeline", icon: "⚡" },
+                  { id: "policies" as AppView, label: "Policies",  icon: "📋" },
+                ] as const).map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setAppView(v.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                      appView === v.id ? "text-white shadow" : "text-slate-400 hover:text-slate-200"
+                    }`}
+                    style={appView === v.id ? { background: "var(--ciq-red)" } : {}}
+                  >
+                    <span>{v.icon}</span>
+                    {v.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {isRunning && appView === "pipeline" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-2 text-xs font-medium"
-            style={{ color: "var(--ciq-red)" }}
-          >
-            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--ciq-red)" }} />
-            Pipeline running
-          </motion.div>
-        )}
+        {/* Running indicator */}
+        <AnimatePresence>
+          {isRunning && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2 text-xs font-medium"
+              style={{ color: "var(--ciq-red)" }}
+            >
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--ciq-red)" }} />
+              Pipeline running
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* Main layout */}
+      {/* ── Body ────────────────────────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden">
+        <AnimatePresence mode="wait">
 
-        {/* Policies view */}
-        {appView === "policies" && <PolicyManager />}
-
-        {/* Pipeline view */}
-        {appView === "pipeline" && <>
-
-        {/* Left panel — Form or Text */}
-        <aside className="w-96 shrink-0 border-r border-slate-800 overflow-y-auto p-5" style={{ background: "var(--surface)" }}>
-          {/* Mode toggle */}
-          <div className="flex gap-1 p-1 bg-slate-800/60 rounded-xl mb-5">
-            {(["form", "text"] as InputMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setInputMode(mode)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  inputMode === mode
-                    ? "text-white shadow"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-                style={inputMode === mode ? { background: "var(--ciq-red)" } : {}}
-                type="button"
-              >
-                {mode === "form" ? "📋 Form" : "✨ Chat"}
-              </button>
-            ))}
-          </div>
-
-          {inputMode === "form" ? (
-            <RequestForm onSubmit={handleSubmit} isRunning={isRunning} />
-          ) : (
-            <TextRequestInput onSubmit={handleSubmit} isRunning={isRunning} />
+          {/* ── Landing phase ───────────────────────────────────── */}
+          {appPhase === "landing" && (
+            <motion.div
+              key="landing"
+              className="flex-1 flex"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.2 } }}
+              transition={{ duration: 0.3 }}
+            >
+              <LandingChat onSubmit={handleSubmit} />
+            </motion.div>
           )}
-        </aside>
 
-        {/* Right panel — Race + Output */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* ── Pipeline phase ──────────────────────────────────── */}
+          {appPhase === "pipeline" && (
+            <motion.div
+              key="pipeline"
+              className="flex-1 flex overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              {/* Policies view */}
+              {appView === "policies" && <PolicyManager />}
 
-          {!hasActivity ? (
-            <EmptyState />
-          ) : (
-            <div className="flex-1 flex overflow-hidden">
+              {/* Pipeline view */}
+              {appView === "pipeline" && (
+                <>
+                  {/* Left sidebar — request summary */}
+                  <motion.aside
+                    initial={{ x: -40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="w-80 shrink-0 border-r overflow-y-auto p-5"
+                    style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                  >
+                    {activeRequest && (
+                      <RequestSummary
+                        request={activeRequest}
+                        isRunning={isRunning}
+                        onNew={handleNewRequest}
+                      />
+                    )}
+                  </motion.aside>
 
-              {/* Race track — main area */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Main — race track */}
+                  <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                    <div className="flex-1 flex overflow-hidden">
 
-                {/* Error banner */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="p-3 rounded-xl bg-red-950/50 border border-red-800/50 text-sm text-red-300"
-                    >
-                      {error}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {/* Race + output */}
+                      <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
-                {/* Race visualization */}
-                <RaceTrack events={events} />
+                        {/* Error banner */}
+                        <AnimatePresence>
+                          {error && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0 }}
+                              className="p-3 rounded-xl bg-red-950/50 border border-red-800/50 text-sm text-red-300"
+                            >
+                              {error}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
 
-                {/* Final output */}
-                <AnimatePresence>
-                  {recommendation && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-base">🏆</span>
-                        <h3 className="text-sm font-semibold text-yellow-400">Final Recommendation</h3>
-                        <div className="flex-1 h-px bg-slate-800" />
+                        <RaceTrack events={events} />
+
+                        {/* Final output */}
+                        <AnimatePresence>
+                          {recommendation && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 12 }}
+                              animate={{ opacity: 1, y: 0 }}
+                            >
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="text-base">🏆</span>
+                                <h3 className="text-sm font-bold text-yellow-400" style={{ fontFamily: "Montserrat, Inter, system-ui" }}>
+                                  Final Recommendation
+                                </h3>
+                                <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+                              </div>
+                              <FinalOutput recommendation={recommendation} />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                      <FinalOutput recommendation={recommendation} />
+
+                      {/* Event log — right */}
+                      <aside
+                        className="w-72 shrink-0 border-l p-4 overflow-hidden flex flex-col"
+                        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                      >
+                        <EventLog events={events} />
+                      </aside>
                     </div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Event log — right sidebar */}
-              <aside className="w-72 shrink-0 border-l border-slate-800 p-4 overflow-hidden flex flex-col" style={{ background: "var(--surface)" }}>
-                <EventLog events={events} />
-              </aside>
-
-            </div>
+                  </main>
+                </>
+              )}
+            </motion.div>
           )}
-        </main>
-
-        </> /* end pipeline view */}
-      </div>
-    </div>
-  );
-}
-
-// ─── Empty State ────────────────────────────────────────────────────────────
-
-function EmptyState() {
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center p-8">
-      <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-        className="text-5xl"
-      >
-        🏁
-      </motion.div>
-      <div>
-        <h2 className="text-lg font-semibold text-slate-300">Ready to race</h2>
-        <p className="text-sm text-slate-600 mt-1 max-w-xs">
-          Fill in the request form on the left and hit <span style={{ color: "var(--ciq-red)" }}>Run Procurement Pipeline</span> to watch suppliers compete in real time.
-        </p>
-      </div>
-      <div className="flex flex-col gap-2 mt-2 text-xs text-slate-600 max-w-xs">
-        {["Suppliers filtered by region, restrictions & capacity", "Policies applied with live event stream", "Shortlist ranked by price, quality, risk & ESG", "Escalations triggered automatically"].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + i * 0.1 }}
-            className="flex items-center gap-2"
-          >
-            <span style={{ color: "var(--ciq-red)" }}>→</span>
-            {item}
-          </motion.div>
-        ))}
+        </AnimatePresence>
       </div>
     </div>
   );
