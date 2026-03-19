@@ -18,19 +18,29 @@
     "example": "examples"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
-    "build": "tsc",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "framer-motion": "^12.38.0",
     "mysql2": "^3.20.0",
-    "neo4j-driver": "^6.0.1"
+    "neo4j-driver": "^6.0.1",
+    "next": "^15.5.13",
+    "openai": "^6.32.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   }
 }

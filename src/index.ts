@@ -1,4 +1,4 @@
-import { closePool, query } from "./db/client";
+import { closePool, query } from "./db/mysql";
 
 async function main(): Promise<void> {
   const rows = await query("SELECT 1 + 1 AS result");
