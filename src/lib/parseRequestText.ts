@@ -13,7 +13,7 @@ const getClient = () =>
 // System prompt
 // ---------------------------------------------------------------------------
 
-const SYSTEM_PROMPT = `You are a procurement request parser. Extract structured fields from the user's free-text procurement request.
+const SYSTEM_PROMPT = `You are a procurement request parser. Extract structured fields from the user's free-text procurement request. (the request can be in German and French as well as English)
 
 Available category_l1 values (and their exact category_l2 children — use these EXACT strings):
 - IT: Laptops, Mobile Workstations, Desktop Workstations, Monitors, Docking Stations, Smartphones, Tablets, Rugged Devices, Accessories Bundles, Replacement / Break-Fix Pool Devices, Cloud Compute, Cloud Storage, Cloud Networking, Managed Cloud Platform Services, Cloud Security Services
