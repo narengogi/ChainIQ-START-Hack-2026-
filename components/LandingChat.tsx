@@ -223,7 +223,7 @@ export default function LandingChat({ onSubmit }: Props) {
                       <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Analyzing…
                     </>
-                  ) : "✨ Analyze"}
+                  ) : "✨ smart source"}
                 </button>
               </div>
             </div>
