@@ -258,7 +258,7 @@ export default function HomePage() {
                                 </h3>
                                 <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
                               </div>
-                              <FinalOutput recommendation={recommendation} />
+                              <FinalOutput recommendation={recommendation} activeRequest={activeRequest} />
                             </motion.div>
                           )}
                         </AnimatePresence>

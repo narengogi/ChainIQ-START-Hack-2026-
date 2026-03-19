@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { FinalRecommendation, RankedSupplier } from "@/src/pipeline/types";
+import type { FinalRecommendation, RankedSupplier, RequestInput } from "@/src/pipeline/types";
 
 interface Props {
-  recommendation: FinalRecommendation;
+  recommendation:  FinalRecommendation;
+  activeRequest?:  RequestInput | null;
 }
+
+type ApprovalState = "idle" | "selecting" | "reason" | "saving" | "saved";
 
 const STATUS_CONFIG = {
   can_proceed: {
@@ -32,9 +35,59 @@ const STATUS_CONFIG = {
   },
 };
 
-export default function FinalOutput({ recommendation }: Props) {
+export default function FinalOutput({ recommendation, activeRequest }: Props) {
   const cfg = STATUS_CONFIG[recommendation.status];
-  const [selected, setSelected] = useState<RankedSupplier | null>(null);
+  const [selected,        setSelected]        = useState<RankedSupplier | null>(null);
+  const [approvalState,   setApprovalState]   = useState<ApprovalState>("idle");
+  const [approvedSupplier, setApprovedSupplier] = useState<RankedSupplier | null>(null);
+  const [deviationReason, setDeviationReason] = useState("");
+  const [saveError,       setSaveError]       = useState<string | null>(null);
+  const reasonInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const winner = recommendation.shortlist.find(s => s.rank === 1) ?? null;
+  const canApprove = recommendation.status !== "cannot_proceed" && winner !== null;
+
+  async function saveApproval(supplier: RankedSupplier, reason?: string) {
+    setApprovalState("saving");
+    setSaveError(null);
+    try {
+      const res = await fetch("/api/historical-awards", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          request: activeRequest ?? {},
+          shortlist: recommendation.shortlist,
+          awarded_supplier_id: supplier.supplier_id,
+          deviation_reason: reason,
+          recommendation_status: recommendation.status,
+          recommendation_reason: recommendation.reason,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Save failed");
+      setApprovedSupplier(supplier);
+      setApprovalState("saved");
+    } catch (err) {
+      setSaveError(String(err));
+      setApprovalState(approvedSupplier ? "saved" : "reason");
+    }
+  }
+
+  function handleApproveWinner() {
+    if (!winner) return;
+    saveApproval(winner);
+  }
+
+  function handleSelectOverride(supplier: RankedSupplier) {
+    setApprovedSupplier(supplier);
+    setApprovalState("reason");
+    setTimeout(() => reasonInputRef.current?.focus(), 100);
+  }
+
+  function handleConfirmOverride() {
+    if (!approvedSupplier || !deviationReason.trim()) return;
+    saveApproval(approvedSupplier, deviationReason.trim());
+  }
 
   return (
     <>
@@ -150,6 +203,150 @@ export default function FinalOutput({ recommendation }: Props) {
             )}
           </div>
         </details>
+
+        {/* ── Approval panel ─────────────────────────────────────────────── */}
+        {canApprove && (
+          <div className="border-t border-slate-700/50 pt-4 space-y-3">
+
+            {/* Saved */}
+            <AnimatePresence>
+              {approvalState === "saved" && approvedSupplier && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-3 rounded-xl p-3 bg-emerald-950/40 border border-emerald-700/40"
+                >
+                  <span className="text-emerald-400 text-base">✓</span>
+                  <div>
+                    <p className="text-xs font-semibold text-emerald-300">Award saved to historical records</p>
+                    <p className="text-[10px] text-emerald-600 mt-0.5">
+                      {approvedSupplier.supplier_name} — {approvedSupplier.rank === 1 ? "top-ranked selection" : `rank #${approvedSupplier.rank} override`}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Error */}
+            {saveError && (
+              <p className="text-xs text-red-400 bg-red-950/30 border border-red-900/40 rounded-xl px-3 py-2">{saveError}</p>
+            )}
+
+            {/* Idle / selecting */}
+            {(approvalState === "idle" || approvalState === "selecting") && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-slate-400">Approve &amp; Record Decision</p>
+
+                {/* Approve top recommendation */}
+                <button
+                  onClick={handleApproveWinner}
+                  className="w-full flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all"
+                  style={{ background: "var(--ciq-red)" }}
+                  type="button"
+                >
+                  <span>Approve {winner!.supplier_name}</span>
+                  <span className="text-xs font-normal opacity-80">🥇 Recommended</span>
+                </button>
+
+                {/* Override: select a different supplier */}
+                {recommendation.shortlist.length > 1 && (
+                  <div>
+                    <button
+                      onClick={() => setApprovalState(approvalState === "selecting" ? "idle" : "selecting")}
+                      className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1"
+                      type="button"
+                    >
+                      <span className={`transition-transform inline-block ${approvalState === "selecting" ? "rotate-90" : ""}`}>▶</span>
+                      Select a different supplier
+                    </button>
+
+                    <AnimatePresence>
+                      {approvalState === "selecting" && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-2 space-y-1.5">
+                            {recommendation.shortlist.filter(s => s.rank !== 1).map(s => (
+                              <button
+                                key={s.supplier_id}
+                                onClick={() => handleSelectOverride(s)}
+                                className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-xs border text-slate-300 hover:text-white transition-all text-left"
+                                style={{ borderColor: "var(--border)", background: "var(--surface-2)" }}
+                                type="button"
+                              >
+                                <span className="font-medium">{s.supplier_name}</span>
+                                <span className="text-slate-500">
+                                  #{s.rank} · {s.score.toFixed(1)} pts
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Reason input for override */}
+            <AnimatePresence>
+              {approvalState === "reason" && approvedSupplier && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-2 rounded-xl border p-4"
+                  style={{ borderColor: "var(--border)", background: "var(--surface-2)" }}
+                >
+                  <p className="text-xs font-semibold text-yellow-400 flex items-center gap-1.5">
+                    <span>⚠</span>
+                    You selected <span className="text-white">{approvedSupplier.supplier_name}</span> (rank #{approvedSupplier.rank}) instead of the top recommendation
+                  </p>
+                  <p className="text-[10px] text-slate-500">Please provide a reason for this override. It will be stored for audit and future model training.</p>
+                  <textarea
+                    ref={reasonInputRef}
+                    value={deviationReason}
+                    onChange={(e) => setDeviationReason(e.target.value)}
+                    rows={3}
+                    placeholder="e.g. Existing relationship with supplier, specific capability required, budget constraints…"
+                    className="w-full rounded-xl border border-slate-700 bg-slate-800/60 px-3 py-2 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-ciq-600 resize-none"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleConfirmOverride}
+                      disabled={!deviationReason.trim() || approvalState === "saving"}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ background: "var(--ciq-red)" }}
+                      type="button"
+                    >
+                      {approvalState === "saving" ? "Saving…" : "Confirm Override & Save"}
+                    </button>
+                    <button
+                      onClick={() => { setApprovalState("idle"); setApprovedSupplier(null); setDeviationReason(""); }}
+                      className="px-4 py-2 rounded-xl text-xs border text-slate-400 hover:text-slate-200 transition-colors"
+                      style={{ borderColor: "var(--border)" }}
+                      type="button"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Saving spinner */}
+            {approvalState === "saving" && (
+              <div className="flex items-center justify-center gap-2 py-2 text-xs text-slate-500">
+                <span className="w-3.5 h-3.5 border-2 border-slate-700 border-t-slate-400 rounded-full animate-spin" />
+                Saving to historical records…
+              </div>
+            )}
+          </div>
+        )}
       </motion.div>
 
       {/* Supplier detail modal */}
