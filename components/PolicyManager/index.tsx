@@ -33,7 +33,7 @@ export default function PolicyManager() {
     <div className="flex-1 overflow-y-auto p-6">
       <div className="max-w-6xl mx-auto space-y-1">
         <div className="mb-5">
-          <h2 className="text-base font-semibold text-white">Policy Management</h2>
+          <h2 className="text-base font-bold text-white" style={{ fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.01em" }}>Policy Management</h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Create, edit and delete procurement policies. Changes take effect on the next pipeline run.
           </p>

@@ -83,13 +83,13 @@ export function TagInput({
         {value.map((tag) => (
           <span
             key={tag}
-            className="flex items-center gap-1 px-2 py-0.5 bg-sky-900/40 border border-sky-700/40 rounded-full text-[11px] text-sky-300"
+            className="flex items-center gap-1 px-2 py-0.5 bg-ciq-600/20 border border-ciq-600/20 rounded-full text-[11px] text-ciq-300"
           >
             {tag}
             <button
               type="button"
               onClick={() => onChange(value.filter((t) => t !== tag))}
-              className="text-sky-500 hover:text-red-400 leading-none"
+              className="text-ciq-500 hover:text-red-400 leading-none"
             >×</button>
           </span>
         ))}
@@ -101,12 +101,12 @@ export function TagInput({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(); }}}
           placeholder={placeholder ?? "Type and press Enter…"}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+          className="flex-1 rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-ciq-600"
         />
         <button
           type="button"
           onClick={add}
-          className="px-2.5 py-1.5 rounded-lg bg-sky-800/40 text-sky-300 text-xs hover:bg-sky-700/40"
+          className="px-2.5 py-1.5 rounded-lg bg-ciq-600/20 text-ciq-300 text-xs hover:bg-ciq-600/20"
         >Add</button>
       </div>
     </div>
@@ -128,7 +128,7 @@ export function FormField({
   );
 }
 
-export const inputCls = "w-full rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500";
+export const inputCls = "w-full rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1.5 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-ciq-600";
 export const selectCls = `${inputCls} cursor-pointer`;
 
 // ─── FormPanel ────────────────────────────────────────────────────────────────
@@ -148,10 +148,10 @@ export function FormPanel({
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="rounded-xl border border-sky-800/40 bg-slate-900/80 backdrop-blur p-4 space-y-4 mb-4"
+      className="rounded-xl border border-ciq-600/20 bg-slate-900/80 backdrop-blur p-4 space-y-4 mb-4"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-sky-300">{title}</h3>
+        <h3 className="text-sm font-semibold text-ciq-300">{title}</h3>
         <button
           type="button"
           onClick={onClose}
@@ -175,7 +175,7 @@ export function FormPanel({
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white disabled:opacity-50 flex items-center gap-1.5"
+          className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-ciq-600 hover:bg-ciq-600 text-white disabled:opacity-50 flex items-center gap-1.5"
         >
           {saving && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
           {saving ? "Saving…" : "Save"}
@@ -265,7 +265,7 @@ export function PolicyTable<T extends Record<string, any>>({
                     <span className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => onEdit(row)}
-                        className="text-[10px] text-sky-500 hover:text-sky-300 font-medium"
+                        className="text-[10px] text-ciq-500 hover:text-ciq-300 font-medium"
                       >Edit</button>
                       <button
                         onClick={() => setConfirming(id)}
@@ -297,7 +297,7 @@ export function TabBar<T extends string>({
           onClick={() => onChange(t.id)}
           className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors -mb-px ${
             active === t.id
-              ? "border-sky-500 text-sky-300"
+              ? "border-ciq-600 text-ciq-300"
               : "border-transparent text-slate-500 hover:text-slate-300"
           }`}
         >
@@ -323,7 +323,7 @@ export function SectionHeader({
       <button
         type="button"
         onClick={onAdd}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-ciq-600 hover:bg-ciq-600 text-white text-xs font-semibold transition-colors"
       >
         <span className="text-base leading-none">+</span>
         {addLabel}

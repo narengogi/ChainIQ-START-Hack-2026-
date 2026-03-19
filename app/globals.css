@@ -2,13 +2,21 @@
 
 @layer base {
   :root {
-    --background: #080e1a;
-    --surface:    #0f172a;
-    --surface-2:  #1e293b;
-    --border:     #334155;
-    --text:       #f1f5f9;
-    --text-muted: #94a3b8;
-    --brand:      #38bdf8;
+    /* ChainIQ brand palette */
+    --ciq-red:      #e30613;
+    --ciq-red-dark: #b30010;
+    --ciq-red-glow: rgba(227, 6, 19, 0.25);
+
+    /* Neutral dark surfaces (no blue tint) */
+    --background: #0c0c0c;
+    --surface:    #161616;
+    --surface-2:  #222222;
+    --border:     #383838;
+    --text:       #f4f4f4;
+    --text-muted: #999999;
+
+    /* Alias kept for legacy var() usage */
+    --brand: var(--ciq-red);
   }
 
   * {
@@ -21,6 +29,11 @@
     font-family: "Inter", system-ui, sans-serif;
   }
 
+  h1, h2, h3, h4, h5 {
+    font-family: "Montserrat", "Inter", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -31,5 +44,8 @@
   ::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ciq-red);
   }
 }

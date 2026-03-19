@@ -152,7 +152,7 @@ export default function RaceTrack({ events }: Props) {
             icon="🏁"
             label={isComplete ? "Final Shortlist" : "In Race"}
             count={activeSuppliers.length}
-            accent={isComplete ? "text-teal-400" : "text-sky-400"}
+            accent={isComplete ? "text-teal-400" : "text-ciq-400"}
           />
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             <AnimatePresence>
@@ -226,14 +226,14 @@ function PipelineProgress({ events }: { events: PipelineEvent[] }) {
           <div key={stage.key} className="flex items-center flex-1 min-w-0">
             <div className="flex flex-col items-center">
               <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold transition-all duration-300 ${
-                done ? "bg-sky-500 text-white" : "bg-slate-700 text-slate-500"
-              } ${active ? "ring-2 ring-sky-400/50 ring-offset-1 ring-offset-slate-900" : ""}`}>
+                done ? "bg-ciq-600 text-white" : "bg-slate-700 text-slate-500"
+              } ${active ? "ring-2 ring-ciq-600/20 ring-offset-1 ring-offset-slate-900" : ""}`}>
                 {done ? "✓" : i + 1}
               </div>
-              <span className={`text-[9px] mt-0.5 transition-colors ${done ? "text-sky-400" : "text-slate-600"}`}>{stage.label}</span>
+              <span className={`text-[9px] mt-0.5 transition-colors ${done ? "text-ciq-400" : "text-slate-600"}`}>{stage.label}</span>
             </div>
             {i < STAGES.length - 1 && (
-              <div className={`h-0.5 flex-1 mx-0.5 rounded transition-colors duration-500 ${i < currentIdx ? "bg-sky-500" : "bg-slate-700"}`} />
+              <div className={`h-0.5 flex-1 mx-0.5 rounded transition-colors duration-500 ${i < currentIdx ? "bg-ciq-600" : "bg-slate-700"}`} />
             )}
           </div>
         );
@@ -260,7 +260,7 @@ function SupplierFunnel({
   const steps: { label: string; count: number; eliminated: number; color: string }[] = [];
 
   if (candidateCount !== null) {
-    steps.push({ label: "Pool", count: candidateCount, eliminated: 0, color: "text-sky-400" });
+    steps.push({ label: "Pool", count: candidateCount, eliminated: 0, color: "text-ciq-400" });
   }
   for (const s of stages) {
     steps.push({
@@ -293,7 +293,7 @@ function SupplierFunnel({
             <span className="text-[10px] text-slate-500 w-20 shrink-0 text-right leading-none">{s.label}</span>
             <div className="flex-1 h-4 bg-slate-800 rounded-full overflow-hidden">
               <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-sky-600 to-sky-400"
+                className="h-full rounded-full bg-gradient-to-r from-ciq-700 to-ciq-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.max(4, (s.count / maxCount) * 100)}%` }}
                 transition={{ duration: 0.5, delay: i * 0.05 + 0.1 }}

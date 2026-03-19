@@ -111,7 +111,7 @@ export default function TextRequestInput({ onSubmit, isRunning }: Props) {
           <label className="text-xs font-medium text-slate-400">Describe your procurement need</label>
           <button
             onClick={() => setText(EXAMPLE_TEXT)}
-            className="text-[10px] text-sky-500 hover:text-sky-400 transition-colors"
+            className="text-[10px] text-ciq-400 hover:text-ciq-400 transition-colors"
             type="button"
           >
             Load example
@@ -122,14 +122,15 @@ export default function TextRequestInput({ onSubmit, isRunning }: Props) {
           onChange={(e) => { setText(e.target.value); setParseResult(null); setParseError(null); }}
           rows={7}
           placeholder="e.g. We need 50 laptops for our Paris office by end of month, budget EUR 40,000. Prefer Dell or Lenovo."
-          className="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-sky-500 resize-none leading-relaxed"
+          className="w-full rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-ciq-600 resize-none leading-relaxed"
         />
       </div>
 
       <button
         onClick={handleParse}
         disabled={!text.trim() || isParsing || isRunning}
-        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-sky-600 text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:from-violet-500 hover:to-sky-500 transition-all flex items-center justify-center gap-2"
+        className="w-full py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+        style={{ background: "var(--ciq-red)" }}
         type="button"
       >
         {isParsing ? (
@@ -169,9 +170,9 @@ export default function TextRequestInput({ onSubmit, isRunning }: Props) {
             className="space-y-3"
           >
             {/* Summary card */}
-            <div className="rounded-xl border border-sky-800/30 bg-sky-950/20 px-3 py-2.5 space-y-1">
+            <div className="rounded-xl border border-ciq-600/20 bg-ciq-600/20 px-3 py-2.5 space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-semibold text-sky-400">AI INTERPRETATION</span>
+                <span className="text-[10px] font-mono font-semibold text-ciq-400">AI INTERPRETATION</span>
                 <ConfidenceBadge value={parseResult.confidence} />
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">{parseResult.summary}</p>
@@ -215,11 +216,10 @@ export default function TextRequestInput({ onSubmit, isRunning }: Props) {
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2
-                ${canSubmit
-                  ? "bg-gradient-to-r from-teal-600 to-sky-600 text-white hover:from-teal-500 hover:to-sky-500"
-                  : "bg-slate-800 text-slate-500 cursor-not-allowed"
-                }`}
+              className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                canSubmit ? "text-white" : "bg-slate-800 text-slate-500 cursor-not-allowed"
+              }`}
+              style={canSubmit ? { background: "var(--ciq-red)" } : {}}
               type="button"
             >
               {isRunning ? (

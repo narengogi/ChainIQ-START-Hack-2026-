@@ -125,7 +125,7 @@ export default function FinalOutput({ recommendation }: Props) {
                       <td className="px-3 py-2.5"><ScorePill value={s.quality_score} color="text-emerald-400" /></td>
                       <td className="px-3 py-2.5"><ScorePill value={s.risk_score}    color="text-orange-400" /></td>
                       <td className="px-3 py-2.5"><ScorePill value={s.esg_score}     color="text-teal-400" /></td>
-                      <td className="px-3 py-2.5 font-semibold text-sky-400 font-mono">{s.score.toFixed(1)}</td>
+                      <td className="px-3 py-2.5 font-semibold text-ciq-400 font-mono">{s.score.toFixed(1)}</td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -220,8 +220,8 @@ function SupplierModal({ supplier: s, onClose }: { supplier: RankedSupplier; onC
 
           {/* Recommendation note */}
           {s.recommendation_note && (
-            <div className="p-3 rounded-xl bg-sky-950/30 border border-sky-800/30">
-              <p className="text-[10px] font-semibold text-sky-400 uppercase tracking-wide mb-1">Recommendation Note</p>
+            <div className="p-3 rounded-xl bg-ciq-600/20 border border-ciq-600/20">
+              <p className="text-[10px] font-semibold text-ciq-400 uppercase tracking-wide mb-1">Recommendation Note</p>
               <p className="text-xs text-slate-300 leading-relaxed">{s.recommendation_note}</p>
             </div>
           )}
@@ -285,7 +285,7 @@ function SupplierModal({ supplier: s, onClose }: { supplier: RankedSupplier; onC
               <ScoreBar label="ESG Score"        value={s.esg_score}       color="bg-teal-500" />
               <div className="flex items-center justify-between pt-2 border-t border-slate-800 mt-2">
                 <span className="text-[11px] text-slate-400 font-medium">Composite Score</span>
-                <span className="text-sm font-bold text-sky-400 font-mono">{s.score.toFixed(1)}</span>
+                <span className="text-sm font-bold text-ciq-400 font-mono">{s.score.toFixed(1)}</span>
               </div>
             </div>
           </Section>

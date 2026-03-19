@@ -88,20 +88,21 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col" style={{ background: "var(--background)" }}>
 
       {/* Top bar */}
-      <header className="border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-sky-500/20 border border-sky-500/30 flex items-center justify-center">
-              <span className="text-sky-400 text-sm font-bold">⛓</span>
-            </div>
-            <div>
-              <h1 className="text-sm font-semibold text-white leading-none">ChainIQ</h1>
-              <p className="text-[10px] text-slate-500 mt-0.5">Procurement Intelligence</p>
-            </div>
+      <header className="border-b px-6 py-0 flex items-center justify-between shrink-0" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+        <div className="flex items-center gap-6">
+
+          {/* ChainIQ wordmark */}
+          <div className="flex items-center gap-0 py-3.5">
+            <span className="text-base font-bold leading-none" style={{ color: "var(--ciq-red)", fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}>Chain</span>
+            <span className="text-base font-bold leading-none text-white" style={{ fontFamily: "Montserrat, Inter, system-ui", letterSpacing: "-0.02em" }}>IQ</span>
+            <span className="ml-3 text-[9px] font-semibold tracking-widest uppercase" style={{ color: "var(--text-muted)", letterSpacing: "0.14em" }}>Smart Sourcing</span>
           </div>
 
+          {/* Divider */}
+          <div className="w-px h-5" style={{ background: "var(--border)" }} />
+
           {/* View switcher */}
-          <div className="flex gap-0.5 p-0.5 bg-slate-800/80 rounded-lg border border-slate-700/50">
+          <div className="flex gap-0.5 p-0.5 rounded-lg border" style={{ background: "var(--surface-2)", borderColor: "var(--border)" }}>
             {([
               { id: "pipeline" as AppView, label: "Pipeline", icon: "⚡" },
               { id: "policies" as AppView, label: "Policies",  icon: "📋" },
@@ -109,11 +110,10 @@ export default function HomePage() {
               <button
                 key={v.id}
                 onClick={() => setAppView(v.id)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-all ${
-                  appView === v.id
-                    ? "bg-sky-600 text-white shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+                  appView === v.id ? "text-white shadow" : "text-slate-400 hover:text-slate-200"
                 }`}
+                style={appView === v.id ? { background: "var(--ciq-red)" } : {}}
               >
                 <span>{v.icon}</span>
                 {v.label}
@@ -126,9 +126,10 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-2 text-xs text-sky-400"
+            className="flex items-center gap-2 text-xs font-medium"
+            style={{ color: "var(--ciq-red)" }}
           >
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--ciq-red)" }} />
             Pipeline running
           </motion.div>
         )}
@@ -153,9 +154,10 @@ export default function HomePage() {
                 onClick={() => setInputMode(mode)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   inputMode === mode
-                    ? "bg-sky-600 text-white shadow"
+                    ? "text-white shadow"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
+                style={inputMode === mode ? { background: "var(--ciq-red)" } : {}}
                 type="button"
               >
                 {mode === "form" ? "📋 Form" : "✨ Chat"}
@@ -243,7 +245,7 @@ function EmptyState() {
       <div>
         <h2 className="text-lg font-semibold text-slate-300">Ready to race</h2>
         <p className="text-sm text-slate-600 mt-1 max-w-xs">
-          Fill in the request form on the left and hit <span className="text-sky-400">Run Procurement Pipeline</span> to watch suppliers compete in real time.
+          Fill in the request form on the left and hit <span style={{ color: "var(--ciq-red)" }}>Run Procurement Pipeline</span> to watch suppliers compete in real time.
         </p>
       </div>
       <div className="flex flex-col gap-2 mt-2 text-xs text-slate-600 max-w-xs">
@@ -255,7 +257,7 @@ function EmptyState() {
             transition={{ delay: 0.2 + i * 0.1 }}
             className="flex items-center gap-2"
           >
-            <span className="text-sky-500">→</span>
+            <span style={{ color: "var(--ciq-red)" }}>→</span>
             {item}
           </motion.div>
         ))}

@@ -82,7 +82,7 @@ export default function SupplierCard({ supplier, eliminated, flags = [], ranked,
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           {supplier.preferred_supplier && (
-            <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium">
+            <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-ciq-600/20 text-sky-300 border border-ciq-600/20 font-medium">
               Preferred
             </span>
           )}
@@ -142,7 +142,7 @@ export default function SupplierCard({ supplier, eliminated, flags = [], ranked,
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 * i }}
-          className={`mt-1.5 flex items-start gap-1 p-1.5 rounded ${f.severity === "warn" ? "bg-amber-950/40 border border-amber-800/40" : "bg-blue-950/40 border border-blue-800/40"}`}
+          className={`mt-1.5 flex items-start gap-1 p-1.5 rounded ${f.severity === "warn" ? "bg-amber-950/40 border border-amber-800/40" : "bg-ciq-600/20 border border-ciq-600/20"}`}
         >
           <span className="text-xs">{f.severity === "warn" ? "⚠" : "ℹ"}</span>
           <p className={`text-[10px] leading-snug ${f.severity === "warn" ? "text-amber-400" : "text-blue-400"}`}>{f.flag}</p>

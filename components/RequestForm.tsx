@@ -222,7 +222,7 @@ export default function RequestForm({ onSubmit, isRunning }: Props) {
               onClick={() => toggleDeliveryCountry(c.code)}
               className={`px-2 py-1 text-xs rounded border transition-all ${
                 form.delivery_countries?.includes(c.code)
-                  ? "bg-sky-500/20 border-sky-500 text-sky-300"
+                  ? "bg-ciq-600/20 border-ciq-600 text-ciq-300"
                   : "border-slate-700 text-slate-400 hover:border-slate-500"
               }`}
             >
@@ -340,7 +340,8 @@ export default function RequestForm({ onSubmit, isRunning }: Props) {
       <button
         type="submit"
         disabled={isRunning || !form.category_l1 || !form.category_l2}
-        className="w-full py-3 rounded-lg font-semibold text-sm transition-all bg-sky-500 hover:bg-sky-400 text-white disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        className="w-full py-3 rounded-lg font-semibold text-sm transition-all text-white disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        style={{ background: "var(--ciq-red)" }}
       >
         {isRunning ? (
           <span className="flex items-center justify-center gap-2">
@@ -383,6 +384,6 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 }
 
 const selectCls =
-  "w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-2 focus:outline-none focus:border-sky-500 transition-colors";
+  "w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-2 focus:outline-none focus:border-ciq-600 transition-colors";
 const inputCls =
-  "w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-2 focus:outline-none focus:border-sky-500 transition-colors placeholder:text-slate-600";
+  "w-full bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-md px-3 py-2 focus:outline-none focus:border-ciq-600 transition-colors placeholder:text-slate-600";

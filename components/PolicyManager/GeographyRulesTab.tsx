@@ -52,7 +52,7 @@ const COLS: ColDef<GeographyRule>[] = [
     header: "Scope",
     render: (r) => (
       r.country
-        ? <span className="font-mono text-xs bg-sky-900/40 border border-sky-800/30 text-sky-300 px-1.5 rounded">{r.country}</span>
+        ? <span className="font-mono text-xs bg-ciq-600/20 border border-ciq-600/20 text-sky-300 px-1.5 rounded">{r.country}</span>
         : r.region
           ? <span className="font-mono text-xs bg-violet-900/40 border border-violet-800/30 text-violet-300 px-1.5 rounded">{r.region}</span>
           : <span className="text-slate-500 text-[10px]">{parseArr(r.countries).join(", ")}</span>

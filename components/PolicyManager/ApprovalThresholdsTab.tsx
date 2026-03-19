@@ -56,7 +56,7 @@ const COLS: ColDef<ApprovalThreshold>[] = [
 
 function Tags({ items, color }: { items: string[]; color: "sky" | "violet" }) {
   const cls = color === "sky"
-    ? "bg-sky-900/40 text-sky-300 border-sky-800/30"
+    ? "bg-ciq-600/20 text-sky-300 border-ciq-600/20"
     : "bg-violet-900/40 text-violet-300 border-violet-800/30";
   return (
     <span className="flex flex-wrap gap-1">
