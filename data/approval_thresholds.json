@@ -1,0 +1,186 @@
+[
+    {
+      "threshold_id": "AT-001",
+      "currency": "EUR",
+      "min_amount": 0,
+      "max_amount": 24999.99,
+      "min_supplier_quotes": 1,
+      "managed_by": [
+        "business"
+      ],
+      "deviation_approval_required_from": []
+    },
+    {
+      "threshold_id": "AT-002",
+      "currency": "EUR",
+      "min_amount": 25000,
+      "max_amount": 99999.99,
+      "min_supplier_quotes": 2,
+      "managed_by": [
+        "business",
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Procurement Manager"
+      ]
+    },
+    {
+      "threshold_id": "AT-003",
+      "currency": "EUR",
+      "min_amount": 100000,
+      "max_amount": 499999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Head of Category"
+      ]
+    },
+    {
+      "threshold_id": "AT-004",
+      "currency": "EUR",
+      "min_amount": 500000,
+      "max_amount": 4999999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Head of Strategic Sourcing"
+      ]
+    },
+    {
+      "threshold_id": "AT-005",
+      "currency": "EUR",
+      "min_amount": 5000000,
+      "max_amount": 999999999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "CPO"
+      ]
+    },
+    {
+      "threshold_id": "AT-006",
+      "currency": "CHF",
+      "min_amount": 0,
+      "max_amount": 24999.99,
+      "min_supplier_quotes": 1,
+      "managed_by": [
+        "business"
+      ],
+      "deviation_approval_required_from": []
+    },
+    {
+      "threshold_id": "AT-007",
+      "currency": "CHF",
+      "min_amount": 25000,
+      "max_amount": 99999.99,
+      "min_supplier_quotes": 2,
+      "managed_by": [
+        "business",
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Procurement Manager"
+      ]
+    },
+    {
+      "threshold_id": "AT-008",
+      "currency": "CHF",
+      "min_amount": 100000,
+      "max_amount": 499999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Head of Category"
+      ]
+    },
+    {
+      "threshold_id": "AT-009",
+      "currency": "CHF",
+      "min_amount": 500000,
+      "max_amount": 4999999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "Head of Strategic Sourcing"
+      ]
+    },
+    {
+      "threshold_id": "AT-010",
+      "currency": "CHF",
+      "min_amount": 5000000,
+      "max_amount": 999999999.99,
+      "min_supplier_quotes": 3,
+      "managed_by": [
+        "procurement"
+      ],
+      "deviation_approval_required_from": [
+        "CPO"
+      ]
+    },
+    {
+      "threshold_id": "AT-011",
+      "currency": "USD",
+      "min_value": 0,
+      "max_value": 27000,
+      "quotes_required": 1,
+      "approvers": [
+        "business"
+      ],
+      "policy_note": "Single quote acceptable; business sign-off sufficient"
+    },
+    {
+      "threshold_id": "AT-012",
+      "currency": "USD",
+      "min_value": 27000,
+      "max_value": 108000,
+      "quotes_required": 2,
+      "approvers": [
+        "business",
+        "procurement"
+      ],
+      "policy_note": "Two quotes required; deviation requires Procurement Manager approval"
+    },
+    {
+      "threshold_id": "AT-013",
+      "currency": "USD",
+      "min_value": 108000,
+      "max_value": 540000,
+      "quotes_required": 3,
+      "approvers": [
+        "procurement"
+      ],
+      "policy_note": "Three quotes required; Head of Category approval"
+    },
+    {
+      "threshold_id": "AT-014",
+      "currency": "USD",
+      "min_value": 540000,
+      "max_value": 5400000,
+      "quotes_required": 3,
+      "approvers": [
+        "head_of_strategic_sourcing"
+      ],
+      "policy_note": "Three quotes required; Head of Strategic Sourcing approval"
+    },
+    {
+      "threshold_id": "AT-015",
+      "currency": "USD",
+      "min_value": 5400000,
+      "max_value": null,
+      "quotes_required": 3,
+      "approvers": [
+        "cpo"
+      ],
+      "policy_note": "Three quotes required; CPO approval"
+    }
+  ]

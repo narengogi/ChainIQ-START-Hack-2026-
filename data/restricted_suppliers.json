@@ -1,0 +1,56 @@
+[
+    {
+      "supplier_id": "SUP-0008",
+      "supplier_name": "Computacenter Devices",
+      "category_l1": "IT",
+      "category_l2": "Laptops",
+      "restriction_scope": [
+        "CH",
+        "DE"
+      ],
+      "restriction_reason": "Policy restriction for selected device sourcing events"
+    },
+    {
+      "supplier_id": "SUP-0008",
+      "supplier_name": "Computacenter Devices",
+      "category_l1": "IT",
+      "category_l2": "Mobile Workstations",
+      "restriction_scope": [
+        "CH"
+      ],
+      "restriction_reason": "Country restriction in hackathon policy set"
+    },
+    {
+      "supplier_id": "SUP-0011",
+      "supplier_name": "AWS Enterprise EMEA",
+      "category_l1": "IT",
+      "category_l2": "Cloud Storage",
+      "restriction_scope": [
+        "CH"
+      ],
+      "restriction_reason": "Swiss residency-sensitive data scenarios require sovereign or approved providers"
+    },
+    {
+      "supplier_id": "SUP-0045",
+      "supplier_name": "Boutique Creator Network",
+      "category_l1": "Marketing",
+      "category_l2": "Influencer Campaign Management",
+      "restriction_scope": [
+        "all"
+      ],
+      "restriction_reason": "Can be used only below EUR 75000 without exception approval"
+    },
+    {
+      "supplier_id": "SUP-0017",
+      "supplier_name": "Alibaba Cloud International",
+      "category_l1": "IT",
+      "category_l2": "Cloud Storage",
+      "restriction_scope": [
+        "US",
+        "CA",
+        "AU",
+        "IN"
+      ],
+      "restriction_reason": "Data sovereignty risk for sensitive/regulated data in listed jurisdictions. Requires Regional Compliance Lead exception approval for these countries."
+    }
+  ]

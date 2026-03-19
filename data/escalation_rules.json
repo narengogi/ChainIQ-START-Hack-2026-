@@ -1,0 +1,53 @@
+[
+    {
+      "rule_id": "ER-001",
+      "trigger": "missing_required_information",
+      "action": "escalate",
+      "escalate_to": "Requester Clarification"
+    },
+    {
+      "rule_id": "ER-002",
+      "trigger": "preferred_supplier_restricted",
+      "action": "escalate",
+      "escalate_to": "Procurement Manager"
+    },
+    {
+      "rule_id": "ER-003",
+      "trigger": "value_exceeds_threshold",
+      "action": "escalate",
+      "escalate_to": "Head of Strategic Sourcing"
+    },
+    {
+      "rule_id": "ER-004",
+      "trigger": "no_compliant_supplier_found",
+      "action": "escalate",
+      "escalate_to": "Head of Category"
+    },
+    {
+      "rule_id": "ER-005",
+      "trigger": "data_residency_constraint_conflict",
+      "action": "escalate",
+      "escalate_to": "Security and Compliance Review"
+    },
+    {
+      "rule_id": "ER-006",
+      "trigger": "single_supplier_capacity_risk",
+      "action": "escalate",
+      "escalate_to": "Sourcing Excellence Lead"
+    },
+    {
+      "rule_id": "ER-007",
+      "trigger": "brand_safety_review_needed",
+      "action": "escalate",
+      "escalate_to": "Marketing Governance Lead"
+    },
+    {
+      "rule_id": "ER-008",
+      "trigger": "Supplier not registered or sanctioned-screened in delivery country",
+      "action": "Escalate to Regional Compliance Lead before award",
+      "escalation_target": "Regional Compliance Lead",
+      "applies_to_currencies": [
+        "USD"
+      ]
+    }
+  ]

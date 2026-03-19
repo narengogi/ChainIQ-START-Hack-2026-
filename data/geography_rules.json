@@ -1,0 +1,83 @@
+[
+    {
+      "rule_id": "GR-001",
+      "country": "CH",
+      "rule_type": "sovereign_preference",
+      "rule_text": "Swiss data residency-sensitive cloud requests prefer sovereign or approved providers"
+    },
+    {
+      "rule_id": "GR-002",
+      "country": "DE",
+      "rule_type": "lead_time_constraint",
+      "rule_text": "Urgent end-user-device requests in Germany require delivery capability within requested deadline"
+    },
+    {
+      "rule_id": "GR-003",
+      "country": "FR",
+      "rule_type": "language_support",
+      "rule_text": "Business-facing services for France should support French-language delivery where relevant"
+    },
+    {
+      "rule_id": "GR-004",
+      "country": "ES",
+      "rule_type": "regional_rollout",
+      "rule_text": "Large furniture and device rollouts in Spain should evidence installation or deployment support"
+    },
+    {
+      "rule_id": "GR-005",
+      "region": "Americas",
+      "countries": [
+        "US",
+        "CA",
+        "BR",
+        "MX"
+      ],
+      "rule": "US data sovereignty: financial and healthcare data must remain in-country; verify supplier US data centre availability for sensitive workloads.",
+      "applies_to": [
+        "IT",
+        "Professional Services"
+      ]
+    },
+    {
+      "rule_id": "GR-006",
+      "region": "APAC",
+      "countries": [
+        "SG",
+        "AU",
+        "JP",
+        "IN"
+      ],
+      "rule": "APAC data localisation: India RBI, Singapore MAS, and Japan FISC guidelines apply to financial data. Verify supplier in-country data residency for regulated categories.",
+      "applies_to": [
+        "IT",
+        "Professional Services"
+      ]
+    },
+    {
+      "rule_id": "GR-007",
+      "region": "MEA",
+      "countries": [
+        "UAE",
+        "ZA"
+      ],
+      "rule": "UAE PDPL and South Africa POPIA compliance required for personal data processing. Validate supplier compliance documentation before award.",
+      "applies_to": [
+        "IT",
+        "Professional Services"
+      ]
+    },
+    {
+      "rule_id": "GR-008",
+      "region": "LATAM",
+      "countries": [
+        "BR",
+        "MX"
+      ],
+      "rule": "Brazil LGPD and Mexico LFPDPPP apply. Data processing agreements (DPA) must be in place before contract signature.",
+      "applies_to": [
+        "IT",
+        "Professional Services",
+        "Marketing"
+      ]
+    }
+  ]
