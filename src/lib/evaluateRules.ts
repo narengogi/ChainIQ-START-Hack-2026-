@@ -88,6 +88,8 @@ export interface RuleEvaluation {
 
 const SYSTEM_PROMPT = `You are a procurement policy rule evaluator embedded in a sourcing pipeline.
 
+Current date is ${new Date()}
+
 Given a JSON context (request details + active suppliers + pipeline state) and a list of rules, evaluate each rule and determine:
 1. Does this rule apply to this specific request? (check both geographic/category scope AND the exact condition stated in the rule text)
 2. If it applies, what concrete action must be taken?
