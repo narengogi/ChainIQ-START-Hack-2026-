@@ -27,16 +27,16 @@ export interface ParseResult {
 // ---------------------------------------------------------------------------
 
 export const FIELD_DEFS: Record<string, { label: string; question: string; required: boolean }> = {
-  category_l1:       { label: "Product / Service Category (L1)",  question: "What is the high-level category? (e.g. IT, Facilities, HR, Marketing, Professional Services)", required: true  },
-  category_l2:       { label: "Sub-category (L2)",               question: "What specific sub-category? (e.g. Laptops, Docking Stations, Recruitment Services)", required: true  },
-  currency:          { label: "Currency",                         question: "What currency should be used? (EUR, CHF, or USD)",                                  required: true  },
-  delivery_countries:{ label: "Delivery Countries",              question: "Which countries need delivery? (e.g. DE, FR, US — use 2-letter codes)",             required: true  },
-  budget_amount:     { label: "Budget Amount",                    question: "What is the total budget for this request?",                                         required: false },
-  quantity:          { label: "Quantity",                         question: "How many units are required?",                                                       required: false },
-  unit_of_measure:   { label: "Unit of Measure",                 question: "What is the unit of measure? (e.g. device, license, seat, month)",                   required: false },
-  required_by_date:  { label: "Required By Date",                question: "What is the delivery deadline? (YYYY-MM-DD format)",                                  required: false },
-  business_unit:     { label: "Business Unit",                   question: "Which business unit is making this request?",                                         required: false },
-  country:           { label: "Requester Country",               question: "Which country is the requester based in? (2-letter code)",                            required: false },
+  category_l1:       { label: "Category (L1)",         question: "What is the high-level category? (e.g. IT, Facilities, Marketing, Professional Services)",    required: true  },
+  category_l2:       { label: "Sub-category (L2)",     question: "What specific sub-category is needed? (e.g. Laptops, IT Project Management Services)",         required: true  },
+  delivery_countries:{ label: "Delivery Countries",    question: "Which countries require delivery? Please use 2-letter ISO codes (e.g. DE, FR, CH, US).",       required: true  },
+  quantity:          { label: "Quantity",               question: "How many units / days / licenses are required?",                                                required: true  },
+  required_by_date:  { label: "Required By Date",      question: "What is the latest delivery or completion date? (YYYY-MM-DD)",                                  required: true  },
+  budget_amount:     { label: "Budget Amount",          question: "What is the total approved budget for this request (numbers only, e.g. 400000)?",               required: true  },
+  currency:          { label: "Currency",               question: "Which currency is the budget in? (EUR, CHF, or USD)",                                           required: true  },
+  unit_of_measure:   { label: "Unit of Measure",       question: "What is the unit of measure? (e.g. device, consulting_day, license, seat)",                     required: false },
+  business_unit:     { label: "Business Unit",         question: "Which business unit or team is making this request?",                                            required: false },
+  country:           { label: "Requester Country",     question: "Which country is the requester based in? (2-letter code, e.g. DE)",                             required: false },
 };
 
 export const REQUIRED_FIELDS = Object.entries(FIELD_DEFS)
