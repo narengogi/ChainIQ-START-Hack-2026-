@@ -294,7 +294,7 @@ export default function FinalOutput({ recommendation, activeRequest }: Props) {
 
             {/* Reason input for override */}
             <AnimatePresence>
-              {approvalState === "reason" && approvedSupplier && (
+              {(approvalState === "reason" || approvalState === "saving") && approvedSupplier && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -338,13 +338,6 @@ export default function FinalOutput({ recommendation, activeRequest }: Props) {
               )}
             </AnimatePresence>
 
-            {/* Saving spinner */}
-            {approvalState === "saving" && (
-              <div className="flex items-center justify-center gap-2 py-2 text-xs text-slate-500">
-                <span className="w-3.5 h-3.5 border-2 border-slate-700 border-t-slate-400 rounded-full animate-spin" />
-                Saving to historical records…
-              </div>
-            )}
           </div>
         )}
       </motion.div>
