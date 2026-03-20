@@ -251,7 +251,7 @@ export default function LandingChat({ onSubmit }: Props) {
                 className="w-full bg-transparent px-5 pt-4 pb-3 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none resize-none leading-relaxed disabled:opacity-50"
               />
               <div className="flex items-center justify-between px-4 pb-3 pt-1">
-                <span className="text-[10px] text-slate-600">⌘ Enter to analyze</span>
+                <span className="text-[10px] text-slate-600">⌘ Enter to smart source</span>
                 <button
                   onClick={handleParse}
                   disabled={!text.trim() || phase === "parsing"}
@@ -264,7 +264,7 @@ export default function LandingChat({ onSubmit }: Props) {
                       <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Analyzing…
                     </>
-                  ) : "✨ Analyze"}
+                  ) : "✨ smart source"}
                 </button>
               </div>
             </div>
