@@ -42,6 +42,7 @@ export default function FinalOutput({ recommendation, activeRequest }: Props) {
   const [approvedSupplier, setApprovedSupplier] = useState<RankedSupplier | null>(null);
   const [deviationReason, setDeviationReason] = useState("");
   const [saveError,       setSaveError]       = useState<string | null>(null);
+  const [isExporting,     setIsExporting]     = useState(false);
   const reasonInputRef = useRef<HTMLTextAreaElement>(null);
 
   const winner = recommendation.shortlist.find(s => s.rank === 1) ?? null;
@@ -89,6 +90,25 @@ export default function FinalOutput({ recommendation, activeRequest }: Props) {
     saveApproval(approvedSupplier, deviationReason.trim());
   }
 
+  function handleExportPdf() {
+    setIsExporting(true);
+    try {
+      const summary = buildPdfSummary(recommendation, activeRequest);
+      const pdfBytes = createPdfDocument(summary);
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const requestId = activeRequest?.request_id?.trim() || "request";
+
+      link.href = url;
+      link.download = `${requestId}-supplier-summary.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   return (
     <>
       <motion.div
@@ -100,12 +120,22 @@ export default function FinalOutput({ recommendation, activeRequest }: Props) {
         {/* Status header */}
         <div className="flex items-center gap-3">
           <span className="text-2xl">{cfg.icon}</span>
-          <div>
+          <div className="flex-1 min-w-0">
             <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.badge}`}>
               {cfg.label}
             </span>
             <p className="text-sm text-slate-300 mt-1 leading-snug">{recommendation.reason}</p>
           </div>
+          {recommendation.shortlist.length > 0 && (
+            <button
+              onClick={handleExportPdf}
+              disabled={isExporting}
+              className="shrink-0 rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2 text-[11px] font-semibold text-slate-200 transition-colors hover:bg-slate-900/70 disabled:opacity-50 disabled:cursor-not-allowed"
+              type="button"
+            >
+              {isExporting ? "Exporting..." : "Export PDF"}
+            </button>
+          )}
         </div>
 
         {/* Budget constraint */}
@@ -612,4 +642,151 @@ function AuditRow({ label, value }: { label: string; value: string }) {
       <p className="text-xs text-slate-300 font-mono break-words">{value}</p>
     </div>
   );
+}
+
+function buildPdfSummary(
+  recommendation: FinalRecommendation,
+  activeRequest?: RequestInput | null,
+): string[] {
+  const topChoices = recommendation.shortlist.slice(0, 5);
+  const lines: string[] = [
+    "ChainIQ Supplier Summary",
+    "",
+    `Generated: ${new Date().toLocaleString("en-GB")}`,
+    `Status: ${recommendation.status.replace(/_/g, " ")}`,
+    `Decision: ${recommendation.reason}`,
+  ];
+
+  if (activeRequest) {
+    lines.push("");
+    lines.push("Request");
+    if (activeRequest.request_id) lines.push(`ID: ${activeRequest.request_id}`);
+    if (activeRequest.title) lines.push(`Title: ${activeRequest.title}`);
+    if (activeRequest.category_l1 || activeRequest.category_l2) {
+      lines.push(
+        `Category: ${[activeRequest.category_l1, activeRequest.category_l2]
+          .filter(Boolean)
+          .join(" / ")}`,
+      );
+    }
+    if (activeRequest.quantity != null) {
+      lines.push(
+        `Quantity: ${activeRequest.quantity} ${
+          activeRequest.unit_of_measure ?? "units"
+        }`,
+      );
+    }
+    if (activeRequest.budget_amount != null) {
+      lines.push(
+        `Budget: ${activeRequest.currency} ${Number(
+          activeRequest.budget_amount,
+        ).toLocaleString("en-US")}`,
+      );
+    }
+    if (activeRequest.required_by_date) {
+      lines.push(`Required by: ${activeRequest.required_by_date}`);
+    }
+    if (activeRequest.delivery_countries.length > 0) {
+      lines.push(`Delivery: ${activeRequest.delivery_countries.join(", ")}`);
+    }
+  }
+
+  lines.push("");
+  lines.push("Top 5 choices");
+
+  for (const supplier of topChoices) {
+    const flags = supplier.flags.length > 0 ? supplier.flags.join(", ") : "none";
+    const leadTime = supplier.pricing_tier
+      ? `${supplier.pricing_tier.standard_lead_time_days}d`
+      : "n/a";
+    const total =
+      supplier.total_price != null
+        ? new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: supplier.currency,
+            maximumFractionDigits: 0,
+          }).format(Number(supplier.total_price))
+        : "n/a";
+
+    lines.push("");
+    lines.push(`#${supplier.rank} ${supplier.supplier_name}`);
+    lines.push(`Score: ${supplier.score.toFixed(1)} | Total: ${total} | Lead: ${leadTime}`);
+    lines.push(
+      `Quality: ${supplier.quality_score} | Risk: ${supplier.risk_score} | ESG: ${supplier.esg_score}`,
+    );
+    lines.push(`Flags: ${flags}`);
+    if (supplier.recommendation_note) {
+      lines.push(`Note: ${supplier.recommendation_note}`);
+    }
+  }
+
+  lines.push("");
+  lines.push("Audit trail");
+  lines.push(
+    `Policies checked: ${
+      recommendation.audit_trail.policies_checked.join(", ") || "none"
+    }`,
+  );
+  lines.push(
+    `Suppliers evaluated: ${
+      recommendation.audit_trail.supplier_ids_evaluated.join(", ") || "none"
+    }`,
+  );
+
+  return lines;
+}
+
+function createPdfDocument(lines: string[]): ArrayBuffer {
+  const encoder = new TextEncoder();
+  const pageHeight = 792;
+  const left = 50;
+  const top = 742;
+  const lineHeight = 14;
+
+  const content = lines
+    .slice(0, 42)
+    .map((line, index) => {
+      const fontSize = index === 0 ? 18 : line === "" ? 11 : 11;
+      const y = top - index * lineHeight;
+      return `BT /F1 ${fontSize} Tf 1 0 0 1 ${left} ${y} Tm (${escapePdfText(
+        line,
+      )}) Tj ET`;
+    })
+    .join("\n");
+
+  const stream = `${content}\n`;
+  const objects = [
+    "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj",
+    "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj",
+    "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj",
+    "4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj",
+    `5 0 obj << /Length ${encoder.encode(stream).length} >> stream\n${stream}endstream\nendobj`,
+  ];
+
+  let pdf = "%PDF-1.4\n";
+  const offsets: number[] = [];
+
+  for (const object of objects) {
+    offsets.push(encoder.encode(pdf).length);
+    pdf += `${object}\n`;
+  }
+
+  const xrefOffset = encoder.encode(pdf).length;
+  pdf += `xref\n0 ${objects.length + 1}\n`;
+  pdf += "0000000000 65535 f \n";
+  for (const offset of offsets) {
+    pdf += `${offset.toString().padStart(10, "0")} 00000 n \n`;
+  }
+  pdf += `trailer << /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+  const bytes = encoder.encode(pdf);
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+}
+
+function escapePdfText(value: string): string {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)")
+    .replace(/[^\x20-\x7E]/g, "?");
 }
